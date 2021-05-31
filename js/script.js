@@ -1,13 +1,40 @@
 let video = document.getElementById('video');
 let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
 
-video.addEventListener('canplay', () => {
-  canvas.width = video.videoWidth
-  canvas.height = video.videoHeight
-})
+////////////////////////////////////////////////////////////////////////////////
+// Drawing
+
+let paths = [];
+for (let i = 0; i <= 5; i++) {
+  paths[i] = new Path({
+    strokeColor: {
+      hue: 360 * i / 5,
+      saturation: 1,
+      brightness: 1
+    }
+  })
+}
 
 function onResults(results) {
+  if (results.multiHandedness) {
+    let hands = {};
+    let i = 0;
+    for (let { label } of results.multiHandedness) {
+      hands[label.toLowerCase()] = results.multiHandLandmarks[i++];
+    }
+
+    let hand = hands.left || hands.right;
+    if (hand) {
+      let scale = view.size;
+      let tips = [hand[4], hand[8], hand[12], hand[16], hand[20]];
+      for (let i = 0; i <= 5; i++) {
+        let path = paths[i];
+        let point = new Point(tips[i]);
+        path.add(point * scale);
+      }
+    }
+  }
+  /*
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (results.multiHandLandmarks) {
     for (const landmarks of results.multiHandLandmarks) {
@@ -21,7 +48,18 @@ function onResults(results) {
       });
     }
   }
+  */
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Video
+
+video.addEventListener('canplay', () => {
+  view.setViewSize({
+    width: video.videoWidth,
+    height: video.videoHeight
+  })
+})
 
 let hands = new Hands({
   locateFile: file => `node_modules/@mediapipe/hands/${file}`
