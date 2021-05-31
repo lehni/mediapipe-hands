@@ -1,0 +1,34 @@
+#container {
+  position: relative;
+}
+
+#video {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+}
+
+#canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+html,
+body {
+  margin: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Scale canvas with resize attribute to full size */
+canvas[resize],
+canvas[paper-data-resize] {
+  width: 100%;
+  height: 100%;
+}
